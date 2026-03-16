@@ -297,6 +297,38 @@ async function main() {
     console.error('Failed to register commands:', error);
   }
 
+// Imports
+const { Client, GatewayIntentBits } = require('discord.js');
+const express = require('express');
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
+
+// =====================
+// Express server to keep bot alive (for monitoring if needed)
+const app = express();
+const PORT = process.env.PORT; // JustRunMy.App provides this automatically
+
+app.get('/', (req, res) => {
+  res.send('Bot is alive!');
+});
+
+app.listen(PORT, () => console.log(`Express server running on port ${PORT}`));
+
+// =====================
+// Discord Bot Logic
+client.on('ready', () => {
+  console.log(`Logged in as ${client.user.tag}`);
+});
+
+client.on('messageCreate', (message) => {
+  if (message.content === '!ping') {
+    message.channel.send('Pong!');
+  }
+});
+
+// Login using environment variable
+client.login(process.env.TOKEN);
+
   await client.login(TOKEN);
 }
 
